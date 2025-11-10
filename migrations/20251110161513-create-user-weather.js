@@ -1,0 +1,61 @@
+"use strict";
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable("UserWeathers", {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER,
+      },
+      userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      cityName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      lat: {
+        type: Sequelize.FLOAT,
+        defaultValue: 0.0,
+      },
+      ion: {
+        type: Sequelize.FLOAT,
+        defaultValue: 0.0,
+      },
+      temperature: {
+        type: Sequelize.FLOAT,
+        allowNull: false,
+      },
+      description: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      humidity: {
+        type: Sequelize.FLOAT,
+        defaultValue: 0.0,
+      },
+      windSpeed: {
+        type: Sequelize.FLOAT,
+        defaultValue: 0.0,
+      },
+      source: {
+        type: Sequelize.STRING,
+        defaultValue: "USER",
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+    });
+  },
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable("UserWeathers");
+  },
+};
