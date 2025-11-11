@@ -5,21 +5,18 @@ const { hashPassword } = require("../helper/bcrypt");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Seed Users
     await queryInterface.bulkInsert("Users", [
       {
         username: "admin",
         email: "admin@mail.com",
         password: hashPassword("admin123"),
-        role: "admin",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         username: "user1",
         email: "user1@mail.com",
-        password: hashPassword,
-        role: "user",
+        password: hashPassword("12345"),
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -27,7 +24,6 @@ module.exports = {
         username: "user2",
         email: "user2@mail.com",
         password: hashPassword("user234"),
-        role: "user",
         createdAt: new Date(),
         updatedAt: new Date(),
       },

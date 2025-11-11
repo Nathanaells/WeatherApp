@@ -12,6 +12,12 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+          model: "Users",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
       cityName: {
         type: Sequelize.STRING,
@@ -40,6 +46,10 @@ module.exports = {
       windSpeed: {
         type: Sequelize.FLOAT,
         defaultValue: 0.0,
+      },
+      vote: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
       },
       source: {
         type: Sequelize.STRING,

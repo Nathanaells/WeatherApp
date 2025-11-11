@@ -44,6 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       humidity: { type: DataTypes.FLOAT, defaultValue: 0.0 },
       windSpeed: { type: DataTypes.FLOAT, defaultValue: 0.0 },
+      vote: { type: DataTypes.INTEGER, defaultValue: 0 },
       source: { type: DataTypes.STRING, defaultValue: "USER" },
     },
     {

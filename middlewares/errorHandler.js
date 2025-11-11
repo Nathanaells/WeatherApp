@@ -10,8 +10,13 @@ function errorHandler(error, req, res, next) {
     message = error.errors[0].message;
   }
 
+  if (error.name === "FormError") {
+    status = 400;
+    message = "Email and Password are required";
+  }
+
   if (error.name === "LoginError") {
-    status = 401;
+    status = 400;
     message = "Invalid email or password";
   }
 
