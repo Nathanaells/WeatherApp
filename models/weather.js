@@ -7,12 +7,18 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      
-    }
+    static associate(models) {}
   }
   Weather.init(
     {
+      country: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Country is required" },
+          notEmpty: { msg: "Country is required" },
+        },
+      },
       cityName: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -25,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.FLOAT,
         defaultValue: 0.0,
       },
-      ion: {
+      lon: {
         type: DataTypes.FLOAT,
         defaultValue: 0.0,
       },

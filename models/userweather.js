@@ -16,6 +16,14 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: { msg: "User is required" },
         },
       },
+      contry: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Country is required" },
+          notEmpty: { msg: "Country is required" },
+        },
+      },
       cityName: {
         type: DataTypes.STRING,
         allowNull: false,

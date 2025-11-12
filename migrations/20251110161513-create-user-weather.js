@@ -19,6 +19,10 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
+      country: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       cityName: {
         type: Sequelize.STRING,
         allowNull: false,

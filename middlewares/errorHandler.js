@@ -20,7 +20,7 @@ function errorHandler(error, req, res, next) {
     message = "Invalid email or password";
   }
 
-  if (error.name === "Unauthorized") {
+  if (error.name === "Unauthorized" || error.name === "JsonWebTokenError") {
     status = 401;
     message = "You are not authorized";
   }
