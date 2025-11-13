@@ -1,20 +1,31 @@
-// import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-// import { GoogleOAuthProvider } from "@react-oauth/google";
-// import { AuthProvider } from "./context/AuthContext";
-import Home from "./views/Home";
+import React, { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomeBase from "./views/HomeBase";
+import LoginForm from "./components/LoginForm";
+import RegisterForm from "./components/RegisterForm";
+
 function App() {
+  const [authMode, setAuthMode] = useState(null); // "login" | "register" | null
+
+  const handleOpenAuthForm = (mode) => setAuthMode(mode);
+  const handleCloseAuthForm = () => setAuthMode(null);
+
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          {/* <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} /> */}
-          <Route path="/" element={<Home />} />
-          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
-        </Routes>
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <HomeBase onOpenAuthForm={handleOpenAuthForm} isLoggedIn={false} />
+          }
+        />
+      </Routes>
+
+      {authMode === "login" && <LoginForm onClose={handleCloseAuthForm} />}
+      {authMode === "register" && (
+        <RegisterForm onClose={handleCloseAuthForm} />
+      )}
+    </BrowserRouter>
   );
 }
 
