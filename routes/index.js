@@ -4,12 +4,12 @@ const errorHandler = require("../middlewares/errorHandler");
 const routerUser = require("./user");
 const routerWeather = require("./weather");
 const routerUserWeather = require("./userWeather");
+const geminiDataRouter = require("./gemini");
 
-// Public routes
 router.use("/users", routerUser);
 router.use("/weather", routerWeather);
+router.use("/gemini-data", geminiDataRouter);
 
-// Protected routes (auth required)
 router.use(auth);
 
 router.use("/user-weather", routerUserWeather);

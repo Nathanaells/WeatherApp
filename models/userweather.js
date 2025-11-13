@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: { msg: "User is required" },
         },
       },
-      contry: {
+      country: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       lat: { type: DataTypes.FLOAT, defaultValue: 0.0 },
-      ion: { type: DataTypes.FLOAT, defaultValue: 0.0 },
+      lon: { type: DataTypes.FLOAT, defaultValue: 0.0 },
       temperature: {
         type: DataTypes.FLOAT,
         allowNull: false,

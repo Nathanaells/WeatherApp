@@ -1,7 +1,7 @@
-const { UserWeather, User } = require("../models");
+const { UserWeather, User, Weather } = require("../models");
+const axios = require("axios");
 
 class ControllerUserWeather {
-  // Get all user weather reports
   static async getAll(req, res, next) {
     try {
       const userWeathers = await UserWeather.findAll({
@@ -12,109 +12,101 @@ class ControllerUserWeather {
         order: [["createdAt", "DESC"]],
       });
 
-      // Transform response to match client expectations
       const formatted = userWeathers.map((uw) => ({
         id: uw.id,
         userId: uw.userId,
         cityName: uw.cityName,
         lat: uw.lat,
-        lon: uw.ion, // note: model has typo "ion" instead of "lon"
+        lon: uw.lon,
         temperature: uw.temperature,
         description: uw.description,
         humidity: uw.humidity,
         windSpeed: uw.windSpeed,
-        votes: uw.vote, // note: model has "vote" not "votes"
+        votes: uw.vote,
         User: uw.User,
         createdAt: uw.createdAt,
         updatedAt: uw.updatedAt,
       }));
 
+      if (formatted.length < 1) throw { name: "NotFound" };
       res.status(200).json(formatted);
     } catch (error) {
-      console.error("Error fetching user weather:", error);
+      console.log(error);
       next(error);
     }
   }
 
-  // Create user weather report
   static async create(req, res, next) {
     try {
       const { userId } = req.loginInfo;
       const {
+        country,
         cityName,
-        lat,
-        lon,
         temperature,
         description,
         humidity,
         windSpeed,
       } = req.body;
 
-      if (!cityName || temperature === undefined || !description) {
-        throw {
-          name: "FormError",
-          message: "City name, temperature, and description are required",
-        };
+      if (!cityName || !country) throw { name: "CreateError" };
+
+      let existingCity = await Weather.findOne({
+        where: { country, cityName },
+      });
+
+      if (!existingCity) {
+        const { data } = await axios.get(
+          "http://api.weatherapi.com/v1/search.json",
+          {
+            params: { key: process.env.WEATHER_API_KEY, q: cityName },
+          }
+        );
+
+        if (!data || data.length === 0) throw { name: "InvalidCity" };
+
+        const found = data.find((item) => {
+          item.country.toLowerCase() === country.toLowerCase();
+          item.name.toLowerCase() === cityName.toLowerCase();
+        });
+
+        if (!found) throw { name: "InvalidCountry" };
+
+        existingCity = await Weather.create({
+          country: found.country,
+          cityName: found.name,
+          lat: found.lat,
+          lon: found.lon,
+        });
       }
 
       const userWeather = await UserWeather.create({
         userId,
-        cityName,
-        lat: lat || 0,
-        ion: lon || 0, // note: model uses "ion" for longitude
+        country: existingCity.country,
+        cityName: existingCity.cityName,
+        lat: existingCity.lat,
+        lon: existingCity.lon,
         temperature,
         description,
-        humidity: humidity || 0,
-        windSpeed: windSpeed || 0,
+        humidity,
+        windSpeed,
         vote: 0,
         source: "USER",
       });
 
-      const populated = await UserWeather.findByPk(userWeather.id, {
-        include: {
-          model: User,
-          attributes: ["id", "username", "email"],
-        },
-      });
-
-      res.status(201).json({
-        id: populated.id,
-        userId: populated.userId,
-        cityName: populated.cityName,
-        lat: populated.lat,
-        lon: populated.ion,
-        temperature: populated.temperature,
-        description: populated.description,
-        humidity: populated.humidity,
-        windSpeed: populated.windSpeed,
-        votes: populated.vote,
-        User: populated.User,
-      });
+      res.status(201).json(userWeather);
     } catch (error) {
-      console.error("Error creating user weather:", error);
       next(error);
     }
   }
 
-  // Update user weather report
   static async update(req, res, next) {
     try {
       const { id } = req.params;
-      const { userId } = req.loginInfo;
       const { temperature, description, humidity, windSpeed } = req.body;
 
       const userWeather = await UserWeather.findByPk(id);
-      if (!userWeather) {
+      if (!userWeather)
         throw { name: "NotFound", message: "Weather report not found" };
-      }
-
-      // Check ownership
-      if (userWeather.userId !== userId) {
-        throw {
-          name: "Unauthorized",
-          message: "You can only edit your own reports",
-        };
-      }
 
       await userWeather.update({
         temperature,
@@ -123,75 +115,38 @@ class ControllerUserWeather {
         windSpeed,
       });
 
-      const updated = await UserWeather.findByPk(id, {
-        include: {
-          model: User,
-          attributes: ["id", "username", "email"],
-        },
-      });
-
-      res.status(200).json({
-        id: updated.id,
-        userId: updated.userId,
-        cityName: updated.cityName,
-        lat: updated.lat,
-        lon: updated.ion,
-        temperature: updated.temperature,
-        description: updated.description,
-        humidity: updated.humidity,
-        windSpeed: updated.windSpeed,
-        votes: updated.vote,
-        User: updated.User,
-      });
+      res.status(200).json(userWeather);
     } catch (error) {
-      console.error("Error updating user weather:", error);
       next(error);
     }
   }
 
-  // Delete user weather report
   static async delete(req, res, next) {
     try {
       const { id } = req.params;
-      const { userId } = req.loginInfo;
-
       const userWeather = await UserWeather.findByPk(id);
-      if (!userWeather) {
+      if (!userWeather)
         throw { name: "NotFound", message: "Weather report not found" };
-      }
-
-      // Check ownership
-      if (userWeather.userId !== userId) {
-        throw {
-          name: "Unauthorized",
-          message: "You can only delete your own reports",
-        };
-      }
 
       await userWeather.destroy();
       res.status(200).json({ message: "Weather report deleted successfully" });
     } catch (error) {
-      console.error("Error deleting user weather:", error);
       next(error);
     }
   }
 
-  // Vote on a weather report
   static async vote(req, res, next) {
     try {
       const { id } = req.params;
 
       const userWeather = await UserWeather.findByPk(id);
-      if (!userWeather) {
-        throw { name: "NotFound", message: "Weather report not found" };
-      }
+
+      if (!userWeather) throw { name: "NotFound" };
 
       await userWeather.increment("vote");
+
       const updated = await UserWeather.findByPk(id, {
-        include: {
-          model: User,
-          attributes: ["id", "username", "email"],
-        },
+        include: { model: User, attributes: ["id", "username", "email"] },
       });
 
       res.status(200).json({
@@ -208,7 +163,6 @@ class ControllerUserWeather {
         User: updated.User,
       });
     } catch (error) {
-      console.error("Error voting:", error);
       next(error);
     }
   }

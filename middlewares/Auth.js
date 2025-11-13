@@ -1,5 +1,5 @@
 const { verifyToken } = require("../helper/jwt");
-const { User } = require("../models");
+const { User, UserWeather } = require("../models");
 async function auth(req, res, next) {
   try {
     const { authorization } = req.headers;
@@ -21,8 +21,21 @@ async function auth(req, res, next) {
 
 async function authz(req, res, next) {
   try {
+    const { id } = req.params;
     const { userId } = req.loginInfo;
-    const user = await User.findByPk(userId);
+
+    const userWeather = await UserWeather.findByPk(id);
+
+    if (!userWeather) {
+      throw { name: "NotFound" };
+    }
+
+    if (userWeather.userId !== userId) {
+      throw {
+        name: "Forbidden",
+      };
+    }
+    next();
   } catch (error) {
     next(error);
   }

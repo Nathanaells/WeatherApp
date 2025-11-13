@@ -1,4 +1,6 @@
-require("dotenv").config();
+if (process.env.NODE.ENV !== "production") {
+  require("dotenv").config();
+}
 const express = require("express");
 const cors = require("cors");
 const mainRouter = require("./routes/index");
@@ -11,6 +13,4 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(mainRouter);
 
-app.listen(port, () => {
-  console.log(`http://localhost:${port}`);
-});
+module.exports = app;

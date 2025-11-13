@@ -31,7 +31,7 @@ module.exports = {
         type: Sequelize.FLOAT,
         defaultValue: 0.0,
       },
-      ion: {
+      lon: {
         type: Sequelize.FLOAT,
         defaultValue: 0.0,
       },
