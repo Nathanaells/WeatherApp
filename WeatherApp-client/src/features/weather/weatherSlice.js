@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-
+import url from "../../constant/url";
 const initialState = {
   globalData: [],
   loading: false,
@@ -34,14 +34,11 @@ export const fetchWeatherAsync = () => async (dispatch) => {
   try {
     dispatch(fetchPending());
 
-    const { data } = await axios.get("http://localhost:3000/weather/countries");
-
-    // Pastikan bentuk data sesuai — kalau backend kirim { countries: [...] }
+    const { data } = await axios.get(`${url}/weather/countries`);
     const countries = data.countries || data;
 
     dispatch(fetchSuccess(countries));
   } catch (error) {
-    console.error("Error fetching weather:", error);
     dispatch(fetchFailed(error.message || "Failed to fetch weather data"));
   }
 };

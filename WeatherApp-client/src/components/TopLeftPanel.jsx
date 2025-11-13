@@ -2,26 +2,24 @@ import React, { useEffect } from "react";
 import { LogIn, UserPlus, LogOut } from "lucide-react";
 import axios from "axios";
 import { showError, showSuccess } from "../UI/toastUI";
+import url from "../constant/url";
 
 export default function TopLeftPanel({
   onOpenAuthForm,
   isLoggedIn,
   onLogout,
   onLoginSuccess,
+  refreshUserWeather,
 }) {
   async function handleCredentialResponse(response) {
-    console.log("Google response received:", response);
-
     try {
       const { data } = await axios.post(
-        "http://localhost:3000/users/login/google",
+        `${url}/users/login/google`,
         {
           googleAccessToken: response.credential,
         },
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
 
@@ -34,29 +32,24 @@ export default function TopLeftPanel({
 
         showSuccess("Login successful!");
 
-        if (onLoginSuccess) {
-          onLoginSuccess();
-        }
+        if (onLoginSuccess) onLoginSuccess();
+        if (refreshUserWeather) refreshUserWeather();
       } else {
         throw new Error("No access token received");
       }
     } catch (error) {
       console.error("Google login error:", error);
-
       const errorMessage =
         error.response?.data?.message ||
         error.message ||
         "Google login failed. Please try again.";
-
       showError(errorMessage);
     }
   }
 
   useEffect(() => {
-    if (!window.google) {
-      console.error("Google Sign-In script not loaded");
-      return;
-    }
+    if (!window.google)
+      return console.error("Google Sign-In script not loaded");
 
     try {
       window.google.accounts.id.initialize({
@@ -66,7 +59,6 @@ export default function TopLeftPanel({
         cancel_on_tap_outside: true,
       });
 
-      // Render button
       const buttonDiv = document.getElementById("buttonDiv");
       if (buttonDiv) {
         window.google.accounts.id.renderButton(buttonDiv, {
@@ -81,9 +73,7 @@ export default function TopLeftPanel({
       showError(error);
     }
 
-    return () => {
-      window.google?.accounts.id.cancel();
-    };
+    return () => window.google?.accounts.id.cancel();
   }, []);
 
   return (
@@ -104,6 +94,7 @@ export default function TopLeftPanel({
           >
             <UserPlus size={18} /> Register
           </button>
+
           <div id="buttonDiv" className="mt-2"></div>
         </div>
       ) : (

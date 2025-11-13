@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import url from "../constant/url";
 
 export default function CountryList() {
   const [countries, setCountries] = useState([]);
@@ -9,7 +10,7 @@ export default function CountryList() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/weather/countries")
+      .get(`${url}/weather/countries`)
       .then((res) => setCountries(res.data.countries || []))
       .catch((err) => console.error("Error fetching countries:", err));
   }, []);
@@ -22,9 +23,7 @@ export default function CountryList() {
 
     if (!cities[countryName]) {
       try {
-        const res = await axios.get(
-          `http://localhost:3000/weather/country/${countryName}`
-        );
+        const res = await axios.get(`${url}/weather/country/${countryName}`);
         setCities((prev) => ({
           ...prev,
           [countryName]: res.data.cities || [],
@@ -51,9 +50,8 @@ export default function CountryList() {
           visible
             ? "opacity-100 translate-x-0 pointer-events-auto"
             : "opacity-0 -translate-x-full pointer-events-none"
-        } relative`} // 👈 ini penting supaya tombol ❌ posisinya fix di atas panel
+        } relative`}
       >
-        {/* Tombol close di kanan atas (tidak ikut scroll) */}
         <button
           onClick={() => setVisible(false)}
           className="absolute top-3 right-5 text-gray-300 hover:text-white text-xl z-50"

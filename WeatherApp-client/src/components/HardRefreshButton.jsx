@@ -1,12 +1,13 @@
 import axios from "axios";
 import { RefreshCw } from "lucide-react";
 import { showError, showSuccess } from "../UI/toastUI";
+import url from "../constant/url";
 
 export default function HardRefreshButton({ onDataFetched }) {
   const handleRefresh = async () => {
     try {
       const token = localStorage.getItem("access_token");
-      const { data } = await axios.post("http://localhost:3000/weather/fetch", {
+      const { data } = await axios.post(`${url}/weather/fetch`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       showSuccess("Data berhasil di-refresh!");
