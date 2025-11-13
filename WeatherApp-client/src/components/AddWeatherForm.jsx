@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { showError, showSuccess } from "../UI/toastUI";
+import url from "../constant/url";
 
 export default function AddUserWeatherButton({ isLoggedIn, onWeatherAdded }) {
   const [showForm, setShowForm] = useState(false);
@@ -28,7 +29,7 @@ export default function AddUserWeatherButton({ isLoggedIn, onWeatherAdded }) {
     e.preventDefault();
     try {
       const token = localStorage.getItem("access_token");
-      const res = await axios.post("http://localhost:3000/user-weather", form, {
+      const res = await axios.post(`${url}/user-weather`, form, {
         headers: { Authorization: `Bearer ${token}` },
       });
       showSuccess("Data cuaca berhasil ditambahkan!");

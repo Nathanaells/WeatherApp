@@ -7,8 +7,9 @@ import { fetchUserWeatherAsync } from "../features/userWeather/userWeatherSlice"
 import WeatherDetailPanel from "./WeatherDetailPanel";
 import UserWeatherPanel from "./UserWeatherPanel";
 import Legend from "./Legend";
+import url from "../constant/url";
 
-export default function EarthGlobe() {
+export default function EarthGlobe({ userWeather }) {
   const globeRef = useRef();
   const globeInstanceRef = useRef(null);
   const dispatch = useDispatch();
@@ -23,6 +24,8 @@ export default function EarthGlobe() {
     dispatch(fetchWeatherAsync());
     dispatch(fetchUserWeatherAsync());
   }, [dispatch]);
+
+  useEffect(() => {}, [userWeather]);
 
   useEffect(() => {
     if (!globeRef.current) return;
@@ -89,9 +92,7 @@ export default function EarthGlobe() {
 
         setLoadingDetail(true);
         try {
-          const res = await axios.get(
-            `http://localhost:3000/weather/country/${data.name}`
-          );
+          const res = await axios.get(`${url}/weather/country/${data.name}`);
           if (res.data && Array.isArray(res.data.cities)) {
             setSelectedWeather({
               country: data.name,
@@ -122,7 +123,7 @@ export default function EarthGlobe() {
       />
 
       {loadingDetail && (
-        <div className="fixed top-4 right-4 bg-gray-800 text-white p-2 rounded-lg shadow-md z-50">
+        <div className="fixed top-4 right-4 bg-gray-800 text-white p-2 rounded-lg shadow-md z-100">
           Loading weather detail...
         </div>
       )}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { X } from "lucide-react";
 import { showError, showSuccess } from "../UI/toastUI";
+import url from "../constant/url";
 
 export default function EditWeatherForm({
   weatherData,
@@ -40,11 +41,9 @@ export default function EditWeatherForm({
         windSpeed: input.windSpeed ? parseFloat(input.windSpeed) : 0.0,
       };
 
-      await axios.put(
-        `http://localhost:3000/user-weather/${weatherData.id}`,
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.put(`${url}/user-weather/${weatherData.id}`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       showSuccess("Data cuaca berhasil diperbarui!");
       if (onWeatherUpdated) onWeatherUpdated(payload);

@@ -17,8 +17,6 @@ export default function GeminiPanel() {
     setResponse("");
 
     try {
-      console.log("Gemini key:", import.meta.env.VITE_GEMINI_API_KEY);
-
       const { data } = await axios.get(
         `${import.meta.env.VITE_API_URL}/gemini-data`
       );
@@ -35,7 +33,6 @@ export default function GeminiPanel() {
         jawablah bahwa datanya belum tersedia.
         `;
 
-      // ✅ Generate dari model 2.5 Flash
       const result = await genAI.models.generateContent({
         model: "gemini-2.5-flash",
         contents: [
@@ -60,7 +57,6 @@ export default function GeminiPanel() {
 
       setResponse(text);
     } catch (err) {
-      console.error("❌ Error:", err);
       setResponse("Gagal memuat data atau koneksi ke Gemini error.");
     } finally {
       setLoading(false);

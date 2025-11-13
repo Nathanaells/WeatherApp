@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 import axios from "axios";
 import { showError, showSuccess } from "../UI/toastUI";
+import url from "../constant/url";
 
 export default function LoginForm({ onClose, onLoginSuccess }) {
   const [input, setInput] = useState({ email: "", password: "" });
@@ -12,10 +13,7 @@ export default function LoginForm({ onClose, onLoginSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(
-        "http://localhost:3000/users/login",
-        input
-      );
+      const { data } = await axios.post(`${url}/users/login`, input);
       localStorage.setItem("access_token", data.access_token);
       showSuccess("Login successful!");
 

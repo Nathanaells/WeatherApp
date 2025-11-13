@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import url from "../../constant/url";
 
 const initialState = {
   data: [],
@@ -43,7 +44,7 @@ export const fetchUserWeatherAsync = () => async (dispatch) => {
       return;
     }
 
-    const { data } = await axios.get("http://localhost:3000/user-weather", {
+    const { data } = await axios.get(`${url}/user-weather`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

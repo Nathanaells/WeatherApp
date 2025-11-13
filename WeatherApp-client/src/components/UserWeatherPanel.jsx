@@ -6,15 +6,13 @@ import { useDispatch } from "react-redux";
 import { showError, showSuccess } from "../UI/toastUI";
 import EditWeatherForm from "./EditWeatherForm";
 import { fetchUserWeatherAsync } from "../features/userWeather/userWeatherSlice";
+import url from "../constant/url";
 
 export default function UserWeatherPanel({ weather, onClose }) {
   const dispatch = useDispatch();
   const [showEditForm, setShowEditForm] = useState(false);
-
-  // 🔹 Gunakan state lokal untuk update data langsung
   const [localWeather, setLocalWeather] = useState(weather);
 
-  // 🔹 Sync jika prop weather berubah (misal dari parent)
   useEffect(() => {
     setLocalWeather(weather);
   }, [weather]);
@@ -24,19 +22,16 @@ export default function UserWeatherPanel({ weather, onClose }) {
     try {
       const token = localStorage.getItem("access_token");
       await axios.patch(
-        `http://localhost:3000/user-weather/${localWeather.id}`,
+        `${url}/user-weather/${localWeather.id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
       showSuccess("Vote berhasil!");
-
-      // update state lokal langsung
       setLocalWeather((prev) => ({
         ...prev,
         votes: prev.votes + 1,
       }));
 
-      // refresh redux data userWeather (opsional)
       dispatch(fetchUserWeatherAsync());
     } catch (error) {
       console.log(error);
@@ -44,22 +39,16 @@ export default function UserWeatherPanel({ weather, onClose }) {
     }
   };
 
-  // 🔹 Edit
   const handleEdit = () => setShowEditForm(true);
 
-  // 🔹 Delete
   const handleDelete = async () => {
     try {
       const token = localStorage.getItem("access_token");
-      await axios.delete(
-        `http://localhost:3000/user-weather/${localWeather.id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await axios.delete(`${url}/user-weather/${localWeather.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       showSuccess("Data berhasil dihapus!");
 
-      // refresh redux data
       dispatch(fetchUserWeatherAsync());
 
       onClose();
@@ -70,7 +59,6 @@ export default function UserWeatherPanel({ weather, onClose }) {
 
   return (
     <>
-      {/* Panel Utama */}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-white shadow-xl rounded-lg p-4 w-96 z-50">
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-semibold">{localWeather.cityName}</h2>
@@ -113,7 +101,6 @@ export default function UserWeatherPanel({ weather, onClose }) {
         </div>
       </div>
 
-      {/* Form Edit */}
       {showEditForm && (
         <EditWeatherForm
           mode="edit"
@@ -121,8 +108,8 @@ export default function UserWeatherPanel({ weather, onClose }) {
           onClose={() => setShowEditForm(false)}
           onWeatherSaved={(updated) => {
             showSuccess("Data berhasil diperbarui!");
-            setLocalWeather(updated); // update data di panel
-            dispatch(fetchUserWeatherAsync()); // update redux
+            setLocalWeather(updated);
+            dispatch(fetchUserWeatherAsync());
             setShowEditForm(false);
           }}
         />

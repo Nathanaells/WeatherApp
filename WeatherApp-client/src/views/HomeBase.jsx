@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TopLeftPanel from "../components/TopLeftPanel";
 import LoginForm from "../components/LoginForm";
 import RegisterForm from "../components/RegisterForm";
@@ -7,55 +7,78 @@ import AddWeatherForm from "../components/AddWeatherForm";
 import EarthGlobe from "../components/EarthGlobe";
 import HardRefreshButton from "../components/HardRefreshButton";
 import GeminiPanel from "../components/GeminiPanel";
+import axios from "axios";
+import url from "../constant/url";
 
 export default function HomeBase() {
-  // 🔹 State autentikasi
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem("access_token")
   );
   const [authFormVisible, setAuthFormVisible] = useState(false);
-  const [authMode, setAuthMode] = useState("login"); // "login" | "register"
+  const [authMode, setAuthMode] = useState("login");
+  const [userWeather, setUserWeather] = useState([]); // state untuk data Globe
 
-  // 🔹 Fungsi logout
+  // Logout function
   const handleLogout = () => {
     localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
     setIsLoggedIn(false);
+    setUserWeather([]); // reset Globe / data user
   };
 
-  // 🔹 Buka/tutup form login & register
   const openAuthForm = (mode) => {
     setAuthMode(mode);
     setAuthFormVisible(true);
   };
   const closeAuthForm = () => setAuthFormVisible(false);
 
-  // 🔹 Setelah login/register sukses
-  const handleLoginSuccess = () => setIsLoggedIn(true);
-  const handleRegisterSuccess = () => setIsLoggedIn(true);
+  // Login sukses handler
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    refreshUserWeather(); // refresh Globe / user data
+  };
+
+  const handleRegisterSuccess = () => {
+    setIsLoggedIn(true);
+    refreshUserWeather();
+  };
+
+  const refreshUserWeather = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+
+      const { data } = await axios.get(`${url}/user-weather`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setUserWeather(data.weather || []);
+    } catch (err) {
+      console.error("Failed to fetch user weather:", err);
+    }
+  };
+  useEffect(() => {
+    if (isLoggedIn) refreshUserWeather();
+  }, [isLoggedIn]);
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-black">
-      {/* 🌍 Globe utama */}
-      <EarthGlobe />
+      <EarthGlobe userWeather={userWeather} />
 
-      {/* 🔄 Tombol Hard Refresh */}
-      <HardRefreshButton />
+      <HardRefreshButton refresh={refreshUserWeather} />
 
-      {/* 👤 Panel login/register/logout di pojok kiri atas */}
       <TopLeftPanel
         isLoggedIn={isLoggedIn}
         onOpenAuthForm={openAuthForm}
         onLogout={handleLogout}
+        onLoginSuccess={handleLoginSuccess}
+        refreshUserWeather={refreshUserWeather}
       />
 
-      {/* 📜 List negara + tombol tambah cuaca */}
       <CountryList />
       <AddWeatherForm isLoggedIn={isLoggedIn} />
-
-      {/* 🤖 Panel Gemini AI (analisis cuaca via prompt) */}
       <GeminiPanel />
 
-      {/* 🔐 Popup form login/register */}
       {authFormVisible &&
         (authMode === "login" ? (
           <LoginForm

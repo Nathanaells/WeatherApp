@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 import axios from "axios";
 import { showError, showSuccess } from "../UI/toastUI";
+import url from "../constant/url";
 
 export default function RegisterForm({ onClose }) {
   const [input, setInput] = useState({ username: "", email: "", password: "" });
@@ -12,13 +13,11 @@ export default function RegisterForm({ onClose }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      const { data } = await axios.post(
-        "http://localhost:3000/users/register",
-        input
-      );
+      const { data } = await axios.post(`${url}/users/register`, input);
 
       showSuccess(data.message);
     } catch (error) {
+      console.log(error);
       showError(error.response.data.message);
     }
 
