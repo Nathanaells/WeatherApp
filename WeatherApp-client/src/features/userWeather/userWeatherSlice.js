@@ -33,14 +33,13 @@ export const userWeatherSlice = createSlice({
 export const { fetchPending, fetchSuccess, fetchFailed } =
   userWeatherSlice.actions;
 
-// 🔹 Thunk untuk ambil data user weather
 export const fetchUserWeatherAsync = () => async (dispatch) => {
   try {
     dispatch(fetchPending());
 
     const token = localStorage.getItem("access_token");
     if (!token) {
-      dispatch(fetchSuccess([])); // kalau belum login, kosongkan data aja
+      dispatch(fetchSuccess([]));
       return;
     }
 

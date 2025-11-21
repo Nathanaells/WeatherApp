@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import url from "../../constant/url";
+
 const initialState = {
   globalData: [],
   loading: false,
@@ -30,6 +31,7 @@ export const weatherSlice = createSlice({
 });
 
 export const { fetchPending, fetchSuccess, fetchFailed } = weatherSlice.actions;
+
 export const fetchWeatherAsync = () => async (dispatch) => {
   try {
     dispatch(fetchPending());
