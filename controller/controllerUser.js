@@ -55,6 +55,7 @@ class ControllersUser {
       });
 
       const payload = ticket.getPayload();
+      
       const googleId = payload.sub;
       const email = payload.email;
       const name = payload.name;

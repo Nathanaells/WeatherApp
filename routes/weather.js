@@ -1,5 +1,4 @@
 const ControllerWeather = require("../controller/controllerWeather");
-const { authz } = require("../middlewares/Auth");
 const router = require("express").Router();
 
 router.get("/", ControllerWeather.read);

@@ -97,8 +97,6 @@ describe("POST /weather/fetch", () => {
           ],
         });
       }
-
-      // Mock the weather API response
       if (url.includes("current.json")) {
         return Promise.resolve({
           data: {
@@ -118,7 +116,7 @@ describe("POST /weather/fetch", () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("message");
     expect(response.body).toHaveProperty("totalCities");
-  }, 30000); // Still give it 30 seconds just in case
+  }, 30000); 
 });
 
 afterAll(async () => {
