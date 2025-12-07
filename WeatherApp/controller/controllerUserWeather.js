@@ -15,6 +15,7 @@ class ControllerUserWeather {
       const formatted = userWeathers.map((uw) => ({
         id: uw.id,
         userId: uw.userId,
+        country: uw.country,
         cityName: uw.cityName,
         lat: uw.lat,
         lon: uw.lon,

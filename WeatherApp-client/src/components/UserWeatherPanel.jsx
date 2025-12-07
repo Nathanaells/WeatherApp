@@ -17,7 +17,6 @@ export default function UserWeatherPanel({ weather, onClose }) {
     setLocalWeather(weather);
   }, [weather]);
 
-  // 🔹 Vote
   const handleVote = async () => {
     try {
       const token = localStorage.getItem("access_token");
@@ -59,6 +58,7 @@ export default function UserWeatherPanel({ weather, onClose }) {
 
   return (
     <>
+      {console.log(weather)}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-white shadow-xl rounded-lg p-4 w-96 z-50">
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-semibold">{localWeather.cityName}</h2>

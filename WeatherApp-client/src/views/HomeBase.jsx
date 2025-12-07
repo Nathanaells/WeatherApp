@@ -16,14 +16,13 @@ export default function HomeBase() {
   );
   const [authFormVisible, setAuthFormVisible] = useState(false);
   const [authMode, setAuthMode] = useState("login");
-  const [userWeather, setUserWeather] = useState([]); // state untuk data Globe
+  const [userWeather, setUserWeather] = useState([]);
 
-  // Logout function
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
-    setUserWeather([]); // reset Globe / data user
+    setUserWeather([]);
   };
 
   const openAuthForm = (mode) => {
@@ -32,10 +31,9 @@ export default function HomeBase() {
   };
   const closeAuthForm = () => setAuthFormVisible(false);
 
-  // Login sukses handler
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
-    refreshUserWeather(); // refresh Globe / user data
+    refreshUserWeather();
   };
 
   const handleRegisterSuccess = () => {
